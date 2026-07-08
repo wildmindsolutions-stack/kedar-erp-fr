@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 interface ActionButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
   loadingText?: string;
-  variant?: 'primary' | 'secondary' | 'success' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'success' | 'ghost' | 'danger';
   size?: 'sm' | 'md';
 }
 
@@ -16,6 +16,7 @@ const variants = {
   secondary: 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 active:scale-[0.98]',
   success: 'bg-emerald-600 text-white hover:bg-emerald-700 active:scale-[0.98]',
   ghost: 'text-slate-600 hover:bg-slate-100 active:scale-[0.98]',
+  danger: 'bg-red-600 text-white hover:bg-red-700 active:scale-[0.98]',
 };
 
 const sizes = {

@@ -6,11 +6,11 @@ import { useAuth } from '@/lib/auth';
 import { ROLE_HOME, canAccessModule } from '@/lib/permissions';
 
 export default function Home() {
-  const { user, loading } = useAuth();
+  const { user, ready } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (loading) return;
+    if (!ready) return;
     if (!user) {
       router.replace('/login');
       return;
@@ -21,7 +21,7 @@ export default function Home() {
     } else {
       router.replace(home);
     }
-  }, [user, loading, router]);
+  }, [user, ready, router]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50">

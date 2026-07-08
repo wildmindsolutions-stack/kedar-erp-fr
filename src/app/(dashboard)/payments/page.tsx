@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { api } from '@/lib/api';
 import { DataTable } from '@/components/DataTable';
 import { ActionButton } from '@/components/ActionButton';
@@ -9,6 +9,7 @@ import { SelectField } from '@/components/SelectField';
 import { CreditCard } from 'lucide-react';
 import { ModuleHeader } from '@/components/ModuleHeader';
 import { formatCurrency, formatDate, formatCustomerOptionLabel } from '@/lib/utils';
+import { toastApiError, toastSuccess } from '@/lib/toast';
 import type { ColumnDef } from '@tanstack/react-table';
 
 interface Payment {
@@ -43,7 +44,18 @@ export default function PaymentsPage() {
   const { data: customers = [] } = useQuery({
     queryKey: ['customers'],
     queryFn: () => api.get<{ id: string; name: string; phone?: string; city?: string }[]>('/customers').then((r) => r.data),
+    enabled: showForm,
   });
+
+  const selectedOutstanding = useMemo(
+    () => outstanding.find((o) => o.customerId === form.customerId)?.outstanding ?? null,
+    [outstanding, form.customerId],
+  );
+
+  const totalOutstanding = useMemo(
+    () => outstanding.reduce((sum, o) => sum + o.outstanding, 0),
+    [outstanding],
+  );
 
   const createMutation = useMutation({
     mutationFn: (data: object) => api.post('/payments', data),
@@ -53,8 +65,27 @@ export default function PaymentsPage() {
       queryClient.invalidateQueries({ queryKey: ['customers'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       setShowForm(false);
+      setForm({ customerId: '', amount: '', mode: 'CASH', receivedAt: new Date().toISOString().split('T')[0], reference: '', notes: '' });
+      toastSuccess('Payment recorded');
     },
+    onError: (error) => toastApiError(error, 'Could not record payment.'),
   });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const amount = Number(form.amount);
+    if (selectedOutstanding == null) {
+      toastApiError(new Error('Select a customer with an outstanding balance'));
+      return;
+    }
+    if (amount > selectedOutstanding) {
+      toastApiError(
+        new Error(`Amount cannot exceed outstanding balance of ${formatCurrency(selectedOutstanding)}`),
+      );
+      return;
+    }
+    createMutation.mutate({ ...form, amount });
+  };
 
   const paymentColumns: ColumnDef<Payment>[] = [
     { accessorKey: 'receivedAt', header: 'Date', cell: ({ row }) => formatDate(row.original.receivedAt) },
@@ -77,6 +108,11 @@ export default function PaymentsPage() {
     { value: 'CHEQUE', label: 'Cheque' },
   ];
 
+  const customerOptions = outstanding.map((o) => ({
+    value: o.customerId,
+    label: `${o.customerName} — ${formatCurrency(o.outstanding)} due`,
+  }));
+
   return (
     <div>
       <ModuleHeader
@@ -91,24 +127,39 @@ export default function PaymentsPage() {
 
       {showForm && (
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            createMutation.mutate({ ...form, amount: Number(form.amount) });
-          }}
+          onSubmit={handleSubmit}
           className="mb-6 rounded-lg border border-slate-200 bg-white p-6"
         >
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <SelectField
               value={form.customerId}
-              onChange={(customerId) => setForm({ ...form, customerId })}
-              placeholder="Select customer"
-              options={customers.map((c) => ({
+              onChange={(customerId) => setForm({ ...form, customerId, amount: '' })}
+              placeholder="Select customer with dues"
+              options={customerOptions.length > 0 ? customerOptions : customers.map((c) => ({
                 value: c.id,
                 label: formatCustomerOptionLabel(c, customers),
               }))}
               required
             />
-            <input placeholder="Amount" type="number" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className="rounded-md border border-slate-200 px-3 py-2 text-sm" required />
+            <div>
+              <input
+                placeholder="Amount"
+                type="number"
+                min={0.01}
+                max={selectedOutstanding ?? undefined}
+                step="0.01"
+                value={form.amount}
+                onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm"
+                required
+                disabled={!form.customerId || selectedOutstanding == null}
+              />
+              {selectedOutstanding != null && (
+                <p className="mt-1 text-xs text-slate-500">
+                  Max: <span className="font-medium text-amber-700">{formatCurrency(selectedOutstanding)}</span>
+                </p>
+              )}
+            </div>
             <SelectField
               value={form.mode}
               onChange={(mode) => setForm({ ...form, mode })}
@@ -126,7 +177,14 @@ export default function PaymentsPage() {
       )}
 
       <div className="mb-8">
-        <h2 className="mb-4 text-lg font-semibold text-slate-900">Outstanding Balances</h2>
+        <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-lg font-semibold text-slate-900">Outstanding Balances</h2>
+          {totalOutstanding > 0 && (
+            <p className="text-sm text-slate-500">
+              Total outstanding: <span className="font-semibold tabular-nums text-amber-700">{formatCurrency(totalOutstanding)}</span>
+            </p>
+          )}
+        </div>
         <DataTable columns={outstandingColumns} data={outstanding} />
       </div>
 

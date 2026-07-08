@@ -8,6 +8,7 @@ import { formatCurrency, formatDate } from '@/lib/utils';
 import { useAuth } from '@/lib/auth';
 import { canAccessModule, ROLE_HOME } from '@/lib/permissions';
 import { QuickActions } from '@/components/QuickActions';
+import { DashboardSkeleton } from '@/components/DashboardSkeleton';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   Area, AreaChart,
@@ -76,10 +77,13 @@ export default function DashboardPage() {
     }
   }, [user, router]);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['dashboard'],
     queryFn: () => api.get<DashboardStats>('/dashboard').then((r) => r.data),
-    refetchInterval: 30000,
+    refetchInterval: 60_000,
+    staleTime: 45_000,
+    retry: 2,
+    retryDelay: (attempt) => Math.min(3000 * (attempt + 1), 10000),
     enabled: !!user && canAccessModule(user.role, user.permissions || [], 'dashboard'),
   });
 
@@ -87,8 +91,28 @@ export default function DashboardPage() {
     return null;
   }
 
-  if (isLoading) {
-    return <div className="animate-pulse text-slate-500">Loading dashboard...</div>;
+  if (isLoading && !data) {
+    return <DashboardSkeleton />;
+  }
+
+  if (isError && !data) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
+        <p className="text-sm font-medium text-red-800">Could not load dashboard</p>
+        <p className="mt-1 text-xs text-red-600">The server may be waking up. Please try again.</p>
+        <button
+          type="button"
+          onClick={() => refetch()}
+          className="mt-4 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return <DashboardSkeleton />;
   }
 
   if (user.role === 'Warehouse' && data) {

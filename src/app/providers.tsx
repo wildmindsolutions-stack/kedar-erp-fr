@@ -7,7 +7,14 @@ import { AuthProvider } from '@/lib/auth';
 
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: { queries: { staleTime: 30000, retry: 1 } },
+    defaultOptions: {
+      queries: {
+        staleTime: 30_000,
+        retry: 2,
+        retryDelay: (attempt) => Math.min(2000 * (attempt + 1), 8000),
+        refetchOnWindowFocus: false,
+      },
+    },
   }));
 
   return (
