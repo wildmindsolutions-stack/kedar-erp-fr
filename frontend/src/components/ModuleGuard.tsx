@@ -24,7 +24,7 @@ export function ModuleGuard({ children }: { children: React.ReactNode }) {
   if (!ready || !user) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-kedar-gold border-t-transparent" />
       </div>
     );
   }
@@ -32,7 +32,7 @@ export function ModuleGuard({ children }: { children: React.ReactNode }) {
   if (!canView) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-kedar-gold border-t-transparent" />
       </div>
     );
   }

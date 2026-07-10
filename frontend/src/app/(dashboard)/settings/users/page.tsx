@@ -29,7 +29,7 @@ interface Role {
 
 const PROTECTED_ROLES = ['Owner', 'Admin'];
 const inputClass =
-  'min-h-[44px] rounded-md border border-slate-200 px-3 py-2.5 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:py-2 sm:text-sm';
+  'min-h-[44px] rounded-md border border-slate-200 px-3 py-2.5 text-base focus:border-kedar-gold focus:outline-none focus:ring-1 focus:ring-kedar-gold sm:py-2 sm:text-sm';
 
 export default function UsersPage() {
   const queryClient = useQueryClient();
@@ -169,7 +169,7 @@ export default function UsersPage() {
             <button
               type="button"
               onClick={() => openEdit(u)}
-              className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 hover:text-blue-600"
+              className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 hover:text-kedar-gold-dark"
               title="Edit user"
             >
               <Pencil size={16} />
@@ -315,7 +315,7 @@ export default function UsersPage() {
             onClick={() => setTab(t)}
             className={`border-b-2 px-4 py-2 text-sm font-medium capitalize transition-colors ${
               tab === t
-                ? 'border-blue-600 text-blue-600'
+                ? 'border-kedar-gold text-kedar-navy'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -358,7 +358,7 @@ export default function UsersPage() {
             e.preventDefault();
             updateMutation.mutate({ id: editingId, data: editForm });
           }}
-          className="mb-6 rounded-lg border border-blue-200 bg-blue-50/30 p-6"
+          className="mb-6 rounded-lg border border-kedar-gold/30 bg-kedar-gold/10 p-6"
         >
           <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-sm font-semibold text-slate-900">Edit User</h2>

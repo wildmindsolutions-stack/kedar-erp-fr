@@ -53,7 +53,7 @@ export function DataTable<T>({ columns, data, searchKey, searchPlaceholder }: Da
           placeholder={searchPlaceholder || 'Search...'}
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="w-full rounded-md border border-slate-200 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:max-w-sm"
+          className="w-full rounded-md border border-slate-200 px-3 py-2.5 text-sm focus:border-kedar-gold focus:outline-none focus:ring-1 focus:ring-kedar-gold sm:max-w-sm"
         />
       )}
 

@@ -19,7 +19,7 @@ export function ModuleHeader({ module, icon: Icon, actions }: ModuleHeaderProps)
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-3">
           {Icon && (
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm sm:h-11 sm:w-11">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-kedar-navy text-kedar-gold shadow-sm sm:h-11 sm:w-11">
               <Icon size={21} />
             </div>
           )}

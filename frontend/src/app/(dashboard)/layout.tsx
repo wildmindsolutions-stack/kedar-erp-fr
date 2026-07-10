@@ -8,7 +8,7 @@ import { ModuleGuard } from '@/components/ModuleGuard';
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-kedar-cream">
         <Sidebar />
         <main className="min-w-0 lg:pl-64">
           <TopBar />
