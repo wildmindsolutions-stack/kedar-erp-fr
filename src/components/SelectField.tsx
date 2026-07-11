@@ -116,9 +116,9 @@ export function SelectField({
         onClick={() => !disabled && setOpen((o) => !o)}
         className={cn(
           'flex w-full min-h-[44px] items-center justify-between gap-2 rounded-md border bg-white px-3 py-2.5 text-left text-sm transition-colors sm:min-h-0 sm:py-2',
-          'focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500',
+          'focus:border-kedar-gold focus:outline-none focus:ring-1 focus:ring-kedar-gold',
           disabled ? 'cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400' : 'border-slate-200 hover:border-slate-300',
-          open && !disabled && 'border-blue-500 ring-1 ring-blue-500',
+          open && !disabled && 'border-kedar-gold ring-1 ring-kedar-gold',
         )}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -147,7 +147,7 @@ export function SelectField({
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search..."
-                  className="w-full rounded-md border border-slate-200 py-1.5 pl-8 pr-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-md border border-slate-200 py-1.5 pl-8 pr-2 text-sm focus:border-kedar-gold focus:outline-none focus:ring-1 focus:ring-kedar-gold"
                 />
               </div>
             </div>
@@ -172,7 +172,7 @@ export function SelectField({
                         option.disabled
                           ? 'cursor-not-allowed text-slate-300'
                           : isSelected
-                            ? 'bg-blue-50 text-blue-700'
+                            ? 'bg-kedar-gold/15 text-kedar-navy'
                             : 'text-slate-800 hover:bg-slate-50',
                       )}
                     >

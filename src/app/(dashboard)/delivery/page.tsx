@@ -92,7 +92,7 @@ export default function DeliveryPage() {
     { accessorKey: 'status', header: 'Status', cell: ({ row }) => (
       <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
         row.original.status === 'DELIVERED' ? 'bg-emerald-100 text-emerald-700' :
-        row.original.status === 'DISPATCHED' ? 'bg-blue-100 text-blue-700' :
+        row.original.status === 'DISPATCHED' ? 'bg-kedar-gold/20 text-kedar-navy' :
         'bg-amber-100 text-amber-700'
       }`}>{row.original.status}</span>
     )},

@@ -71,7 +71,7 @@ export function NotificationPanel() {
   }, [open]);
 
   const moduleColors: Record<string, string> = {
-    manufacturing: 'bg-blue-100 text-blue-700',
+    manufacturing: 'bg-kedar-gold/20 text-kedar-navy',
     inventory: 'bg-purple-100 text-purple-700',
     sales: 'bg-emerald-100 text-emerald-700',
     payments: 'bg-amber-100 text-amber-700',
@@ -106,7 +106,7 @@ export function NotificationPanel() {
                 <button
                   type="button"
                   onClick={() => markAllRead.mutate()}
-                  className="text-xs text-blue-600 hover:underline"
+                  className="text-xs text-kedar-navy hover:underline"
                 >
                   Mark all read
                 </button>
@@ -125,7 +125,7 @@ export function NotificationPanel() {
                   key={n.id}
                   className={cn(
                     'border-b border-slate-50 px-4 py-3 transition-colors hover:bg-slate-50',
-                    !n.isRead && 'bg-blue-50/50',
+                    !n.isRead && 'bg-kedar-gold/10',
                   )}
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -147,7 +147,7 @@ export function NotificationPanel() {
                         <Link
                           href={n.link}
                           onClick={() => { markRead.mutate(n.id); setOpen(false); }}
-                          className="mt-1 inline-block text-xs text-blue-600 hover:underline"
+                          className="mt-1 inline-block text-xs text-kedar-navy hover:underline"
                         >
                           View details →
                         </Link>
