@@ -1,0 +1,26 @@
+export declare const PERMISSIONS: {
+    readonly DASHBOARD_READ: "dashboard:read";
+    readonly MANUFACTURING_READ: "manufacturing:read";
+    readonly MANUFACTURING_WRITE: "manufacturing:write";
+    readonly INVENTORY_READ: "inventory:read";
+    readonly INVENTORY_WRITE: "inventory:write";
+    readonly SALES_READ: "sales:read";
+    readonly SALES_WRITE: "sales:write";
+    readonly CUSTOMERS_READ: "customers:read";
+    readonly CUSTOMERS_WRITE: "customers:write";
+    readonly PAYMENTS_READ: "payments:read";
+    readonly PAYMENTS_WRITE: "payments:write";
+    readonly DELIVERY_READ: "delivery:read";
+    readonly DELIVERY_WRITE: "delivery:write";
+    readonly PRODUCTS_READ: "products:read";
+    readonly PRODUCTS_WRITE: "products:write";
+    readonly USERS_READ: "users:read";
+    readonly USERS_WRITE: "users:write";
+};
+export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
+export declare const MODULE_PERMISSIONS: Record<string, Permission[]>;
+export declare const ROLE_PERMISSIONS: Record<string, Permission[] | ['*']>;
+export declare function hasPermission(userPermissions: string[], role: string, required: Permission): boolean;
+export declare function canAccessModule(role: string, permissions: string[], module: string): boolean;
+export declare function getRolePermissions(roleName: string): Permission[];
+export declare function canConfirmSalesOrders(role: string): boolean;

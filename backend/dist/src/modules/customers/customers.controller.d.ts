@@ -1,0 +1,101 @@
+import { CustomersService } from './customers.service';
+import { JwtPayload } from '../../common/decorators/current-user.decorator';
+export declare class CustomersController {
+    private customersService;
+    constructor(customersService: CustomersService);
+    findAll(): Promise<{
+        creditLimit: number;
+        outstanding: number;
+        id: string;
+        name: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string | null;
+        isDeleted: boolean;
+        gstin: string | null;
+        phone: string | null;
+        address: string | null;
+        city: string | null;
+        state: string;
+    }[]>;
+    findOne(id: string): Promise<{
+        creditLimit: number;
+        outstanding: number;
+        ledger: {
+            amount: number;
+            id: string;
+            createdAt: Date;
+            notes: string | null;
+            refId: string | null;
+            type: import(".prisma/client").$Enums.LedgerType;
+            customerId: string;
+        }[];
+        id: string;
+        name: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string | null;
+        isDeleted: boolean;
+        gstin: string | null;
+        phone: string | null;
+        address: string | null;
+        city: string | null;
+        state: string;
+    } | null>;
+    create(body: {
+        name: string;
+        gstin?: string;
+        phone?: string;
+        email?: string;
+        address?: string;
+        city?: string;
+        state?: string;
+        creditLimit?: number;
+    }, user: JwtPayload): Promise<{
+        id: string;
+        name: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string | null;
+        isDeleted: boolean;
+        gstin: string | null;
+        phone: string | null;
+        address: string | null;
+        city: string | null;
+        state: string;
+        creditLimit: import("@prisma/client/runtime/library").Decimal;
+    }>;
+    update(id: string, body: Record<string, unknown>): import(".prisma/client").Prisma.Prisma__CustomerClient<{
+        id: string;
+        name: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string | null;
+        isDeleted: boolean;
+        gstin: string | null;
+        phone: string | null;
+        address: string | null;
+        city: string | null;
+        state: string;
+        creditLimit: import("@prisma/client/runtime/library").Decimal;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
+    remove(id: string): import(".prisma/client").Prisma.Prisma__CustomerClient<{
+        id: string;
+        name: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string | null;
+        isDeleted: boolean;
+        gstin: string | null;
+        phone: string | null;
+        address: string | null;
+        city: string | null;
+        state: string;
+        creditLimit: import("@prisma/client/runtime/library").Decimal;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
+}
