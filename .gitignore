@@ -19,6 +19,7 @@
 # misc
 .DS_Store
 *.pem
+*.docx
 
 # debug
 npm-debug.log*
@@ -34,3 +35,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local monorepo folders (not part of this frontend repo)
+/backend
+/docs
+/frontend
+/kedar-foundation-website
+ROLE_GUIDE.md
