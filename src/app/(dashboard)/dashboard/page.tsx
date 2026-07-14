@@ -132,8 +132,8 @@ export default function DashboardPage() {
       label: 'To Dispatch',
       value: String(data.pendingDeliveries),
       icon: Truck,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
+      color: 'text-kedar-navy',
+      bg: 'bg-kedar-gold/10',
       href: '/delivery',
     },
     data?.draftOrdersCount != null && data.draftOrdersCount > 0 && {
@@ -148,8 +148,8 @@ export default function DashboardPage() {
       label: "Today's Production",
       value: `${data.todayProduction} units`,
       icon: Factory,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
+      color: 'text-kedar-navy',
+      bg: 'bg-kedar-gold/10',
       href: '/manufacturing',
     },
     data?.todaySales != null && {
@@ -164,8 +164,8 @@ export default function DashboardPage() {
       label: 'Monthly Revenue',
       value: formatCurrency(data.monthlyRevenue),
       icon: TrendingUp,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
+      color: 'text-kedar-navy',
+      bg: 'bg-kedar-gold/10',
       href: '/sales',
     },
     data?.pendingPayments != null && data.pendingPayments > 0 && {
@@ -200,7 +200,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {showWelcome && (
-        <div className="rounded-xl bg-gradient-to-r from-slate-900 to-slate-800 p-6 text-white">
+        <div className="rounded-xl bg-gradient-to-r from-kedar-navy to-kedar-navy-dark p-6 text-white">
           <p className="text-sm text-slate-300">Welcome back,</p>
           <h1 className="text-2xl font-semibold">{user.name}</h1>
           <p className="mt-1 text-sm text-slate-400">{ROLE_INTRO[user.role] || 'Your operational overview'}</p>
@@ -216,7 +216,7 @@ export default function DashboardPage() {
       {data?.roleTasks && data.roleTasks.length > 0 && (
         <div className="rounded-xl border border-slate-200 bg-white p-5">
           <div className="mb-4 flex items-center gap-2">
-            <ClipboardList size={18} className="text-blue-600" />
+            <ClipboardList size={18} className="text-kedar-navy" />
             <h2 className="text-sm font-semibold text-slate-900">My Tasks</h2>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -242,11 +242,11 @@ export default function DashboardPage() {
                     )}
                   </div>
                   <p className="mt-1 text-xs leading-relaxed text-slate-600">{task.message}</p>
-                  <p className="mt-2 text-xs font-medium text-blue-600 group-hover:underline">
+                  <p className="mt-2 text-xs font-medium text-kedar-navy group-hover:underline">
                     {task.actionLabel} →
                   </p>
                 </div>
-                <ArrowRight size={16} className="mt-1 shrink-0 text-slate-400 group-hover:text-blue-600" />
+                <ArrowRight size={16} className="mt-1 shrink-0 text-slate-400 group-hover:text-kedar-navy" />
               </Link>
             ))}
           </div>
@@ -261,7 +261,7 @@ export default function DashboardPage() {
               <Link
                 key={s.label}
                 href={s.href}
-                className="group rounded-xl border border-slate-200 bg-white p-5 transition-all hover:border-blue-200 hover:shadow-md"
+                className="group rounded-xl border border-slate-200 bg-white p-5 transition-all hover:border-kedar-gold/40 hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-slate-500">{s.label}</p>
@@ -335,15 +335,15 @@ export default function DashboardPage() {
                 <AreaChart data={data.salesTrend}>
                   <defs>
                     <linearGradient id="salesGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#D9B960" stopOpacity={0.28} />
+                      <stop offset="95%" stopColor="#D9B960" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="date" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
                   <Tooltip formatter={(v) => [formatCurrency(Number(v)), 'Sales']} />
-                  <Area type="monotone" dataKey="sales" stroke="#2563eb" fill="url(#salesGrad)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="sales" stroke="#0B2447" fill="url(#salesGrad)" strokeWidth={2} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -358,7 +358,7 @@ export default function DashboardPage() {
                   <XAxis type="number" tick={{ fontSize: 11 }} />
                   <YAxis dataKey="productName" type="category" width={100} tick={{ fontSize: 11 }} />
                   <Tooltip />
-                  <Bar dataKey="totalQty" fill="#2563eb" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="totalQty" fill="#D9B960" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -393,7 +393,7 @@ export default function DashboardPage() {
               <h3 className="mb-3 shrink-0 text-sm font-semibold text-slate-900">Recent Activity</h3>
               <div className="max-h-72 space-y-3 overflow-y-auto overscroll-contain pr-1">
                 {data.recentActivity.map((a) => (
-                  <div key={a.id} className="border-l-2 border-blue-200 pl-3">
+                  <div key={a.id} className="border-l-2 border-kedar-gold/30 pl-3">
                     <p className="text-xs font-medium text-slate-800">{a.title}</p>
                     <p className="text-[11px] text-slate-500 line-clamp-2">{a.message}</p>
                     <p className="mt-0.5 text-[10px] text-slate-400">{formatDate(a.time)}</p>
@@ -422,7 +422,7 @@ function KpiTile({
   return (
     <Link
       href={href}
-      className="group flex flex-col rounded-xl border border-slate-200 bg-white p-4 transition-all hover:border-blue-200 hover:shadow-md sm:p-5"
+      className="group flex flex-col rounded-xl border border-slate-200 bg-white p-4 transition-all hover:border-kedar-gold/40 hover:shadow-md sm:p-5"
     >
       <div className="flex items-center justify-between gap-2">
         <p className="text-xs font-medium text-slate-500 sm:text-sm">{label}</p>
@@ -451,8 +451,8 @@ function WarehouseDashboard({
       value: String(data.todayProduction ?? 0),
       suffix: 'units produced today',
       icon: Factory,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
+      color: 'text-kedar-navy',
+      bg: 'bg-kedar-gold/10',
       href: '/manufacturing',
     },
     {
@@ -491,7 +491,7 @@ function WarehouseDashboard({
   return (
     <div className="space-y-5">
       {showWelcome ? (
-        <div className="rounded-xl bg-gradient-to-r from-slate-900 to-slate-800 p-6 text-white">
+        <div className="rounded-xl bg-gradient-to-r from-kedar-navy to-kedar-navy-dark p-6 text-white">
           <p className="text-sm text-slate-300">Welcome back,</p>
           <h1 className="text-2xl font-semibold">{user.name}</h1>
           <p className="mt-1 text-sm text-slate-400">{ROLE_INTRO.Warehouse}</p>
@@ -602,7 +602,7 @@ function WarehouseDashboard({
               <h3 className="mb-3 text-sm font-semibold text-slate-900">Recent activity</h3>
               <div className="max-h-56 space-y-3 overflow-y-auto pr-1">
                 {data.recentActivity.map((a) => (
-                  <div key={a.id} className="border-l-2 border-blue-200 pl-3">
+                  <div key={a.id} className="border-l-2 border-kedar-gold/30 pl-3">
                     <p className="text-xs font-medium text-slate-800">{a.title}</p>
                     <p className="text-[11px] text-slate-500 line-clamp-2">{a.message}</p>
                     <p className="mt-0.5 text-[10px] text-slate-400">{formatDate(a.time)}</p>

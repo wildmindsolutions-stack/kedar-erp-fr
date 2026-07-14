@@ -273,7 +273,7 @@ function SalesPageContent() {
               }))}
               required
             />
-            <input type="date" value={form.orderDate} onChange={(e) => setForm({ ...form, orderDate: e.target.value })} className="rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" required />
+            <input type="date" value={form.orderDate} onChange={(e) => setForm({ ...form, orderDate: e.target.value })} className="rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-kedar-gold focus:outline-none focus:ring-1 focus:ring-kedar-gold" required />
           </div>
           <div className="space-y-2">
             <p className="text-sm font-medium text-slate-700">Line Items</p>
@@ -296,7 +296,7 @@ function SalesPageContent() {
                 <span className="flex items-center tabular-nums text-sm font-medium">{formatCurrency(item.qty * item.rate)}</span>
               </div>
             ))}
-            <button type="button" onClick={() => setItems([...items, { productId: '', qty: 1, rate: 0 }])} className="text-sm text-blue-600 hover:underline">+ Add line</button>
+            <button type="button" onClick={() => setItems([...items, { productId: '', qty: 1, rate: 0 }])} className="text-sm text-kedar-navy hover:underline">+ Add line</button>
           </div>
           <p className="mt-4 text-sm font-medium tabular-nums">
             Subtotal: {formatCurrency(items.reduce((s, i) => s + i.qty * i.rate, 0))}
@@ -313,8 +313,8 @@ function SalesPageContent() {
       )}
 
       <div className="mb-4 flex flex-wrap gap-2">
-        <button type="button" onClick={() => setTab('orders')} className={`min-h-[40px] flex-1 rounded-md px-4 py-2 text-sm transition-colors sm:flex-none sm:min-h-0 ${tab === 'orders' ? 'bg-blue-600 text-white' : 'border border-slate-200 bg-white hover:bg-slate-50'}`}>Orders</button>
-        <button type="button" onClick={() => setTab('invoices')} className={`min-h-[40px] flex-1 rounded-md px-4 py-2 text-sm transition-colors sm:flex-none sm:min-h-0 ${tab === 'invoices' ? 'bg-blue-600 text-white' : 'border border-slate-200 bg-white hover:bg-slate-50'}`}>Invoices</button>
+        <button type="button" onClick={() => setTab('orders')} className={`min-h-[40px] flex-1 rounded-md px-4 py-2 text-sm transition-colors sm:flex-none sm:min-h-0 ${tab === 'orders' ? 'bg-kedar-navy text-kedar-gold' : 'border border-slate-200 bg-white hover:bg-kedar-cream'}`}>Orders</button>
+        <button type="button" onClick={() => setTab('invoices')} className={`min-h-[40px] flex-1 rounded-md px-4 py-2 text-sm transition-colors sm:flex-none sm:min-h-0 ${tab === 'invoices' ? 'bg-kedar-navy text-kedar-gold' : 'border border-slate-200 bg-white hover:bg-kedar-cream'}`}>Invoices</button>
       </div>
 
       {highlightId && orders.some((o) => o.id === highlightId) && (

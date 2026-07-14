@@ -16,9 +16,9 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (!ready) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-slate-50 px-4">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-        <p className="text-sm text-slate-500">Starting Kedar ERP…</p>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-kedar-cream px-4">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-kedar-gold border-t-transparent" />
+        <p className="text-sm text-kedar-navy/60">Starting Kedar ERP…</p>
       </div>
     );
   }

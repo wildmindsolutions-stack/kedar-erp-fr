@@ -3,12 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --primary: #2563eb;
-  --primary-dark: #1e40af;
-  --background: #f8fafc;
+  --primary: #d4af37;
+  --primary-dark: #b8942e;
+  --kedar-navy: #0b2447;
+  --kedar-gold: #d4af37;
+  --background: #faf7f0;
   --surface: #ffffff;
   --border: #e2e8f0;
-  --text-primary: #0f172a;
+  --text-primary: #0b2447;
   --text-secondary: #64748b;
 }
 

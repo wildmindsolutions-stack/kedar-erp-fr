@@ -111,7 +111,7 @@ export default function CustomersPage() {
         <button
           type="button"
           onClick={() => openEdit(row.original)}
-          className="rounded-md p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-blue-600"
+          className="rounded-md p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-kedar-gold-dark"
           title="Edit customer"
         >
           <Pencil size={16} />
@@ -120,7 +120,7 @@ export default function CustomersPage() {
     }] : []),
   ];
 
-  const inputClass = 'min-h-[44px] rounded-md border border-slate-200 px-3 py-2.5 text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:py-2 sm:text-sm';
+  const inputClass = 'min-h-[44px] rounded-md border border-slate-200 px-3 py-2.5 text-base focus:border-kedar-gold focus:outline-none focus:ring-1 focus:ring-kedar-gold sm:py-2 sm:text-sm';
 
   return (
     <div>
@@ -175,7 +175,7 @@ export default function CustomersPage() {
               },
             });
           }}
-          className="mb-6 rounded-lg border border-blue-200 bg-blue-50/30 p-6"
+          className="mb-6 rounded-lg border border-kedar-gold/30 bg-kedar-gold/10 p-6"
         >
           <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-sm font-semibold text-slate-900">Edit Customer</h2>

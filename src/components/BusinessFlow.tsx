@@ -48,7 +48,7 @@ export function BusinessFlow({ activeStep, compact }: BusinessFlowProps) {
                 className={cn(
                   'flex min-w-[80px] flex-col items-center gap-1.5 rounded-lg px-3 py-2 transition-all',
                   isActive
-                    ? 'bg-blue-600 text-white shadow-md'
+                    ? 'bg-kedar-navy text-kedar-gold shadow-md'
                     : 'text-slate-600 hover:bg-slate-100',
                 )}
               >

@@ -12,7 +12,7 @@ interface ActionButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants = {
-  primary: 'bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.98]',
+  primary: 'bg-kedar-gold text-kedar-navy hover:bg-kedar-gold-light active:scale-[0.98]',
   secondary: 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 active:scale-[0.98]',
   success: 'bg-emerald-600 text-white hover:bg-emerald-700 active:scale-[0.98]',
   ghost: 'text-slate-600 hover:bg-slate-100 active:scale-[0.98]',

@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/auth';
 import { canWriteModule } from '@/lib/permissions';
 
 const ACTIONS = [
-  { label: 'Production Entry', href: '/manufacturing', module: 'manufacturing', icon: Factory, color: 'bg-blue-50 text-blue-700 hover:bg-blue-100' },
+  { label: 'Production Entry', href: '/manufacturing', module: 'manufacturing', icon: Factory, color: 'bg-kedar-gold/15 text-kedar-navy hover:bg-kedar-gold/25' },
   { label: 'Stock Check', href: '/inventory', module: 'inventory', icon: Package, color: 'bg-purple-50 text-purple-700 hover:bg-purple-100' },
   { label: 'New Sales Order', href: '/sales', module: 'sales', icon: ShoppingCart, color: 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' },
   { label: 'Record Payment', href: '/payments', module: 'payments', icon: CreditCard, color: 'bg-amber-50 text-amber-700 hover:bg-amber-100' },
