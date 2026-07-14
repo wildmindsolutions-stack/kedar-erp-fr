@@ -17,11 +17,14 @@ interface Customer {
   id: string;
   name: string;
   phone: string;
+  email?: string | null;
   city: string;
   state: string;
   creditLimit: number;
   outstanding: number;
   isActive: boolean;
+  hasPortalAccount?: boolean;
+  portalEmail?: string | null;
 }
 
 const emptyForm = { name: '', phone: '', city: '', state: 'Maharashtra', creditLimit: '' };
@@ -78,6 +81,20 @@ export default function CustomersPage() {
 
   const columns: ColumnDef<Customer>[] = [
     { accessorKey: 'name', header: 'Customer' },
+    { accessorKey: 'email', header: 'Email', cell: ({ row }) => (
+      <span className="text-sm text-slate-600">{row.original.email || row.original.portalEmail || '—'}</span>
+    )},
+    {
+      id: 'portal',
+      header: 'Portal',
+      cell: ({ row }) => (
+        row.original.hasPortalAccount ? (
+          <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-800">Website account</span>
+        ) : (
+          <span className="text-xs text-slate-400">—</span>
+        )
+      ),
+    },
     { accessorKey: 'phone', header: 'Phone' },
     { accessorKey: 'city', header: 'City' },
     { accessorKey: 'state', header: 'State' },

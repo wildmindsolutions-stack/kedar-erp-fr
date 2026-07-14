@@ -1,12 +1,14 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { DataTable } from '@/components/DataTable';
 import { ActionButton } from '@/components/ActionButton';
 import { PageToolbar } from '@/components/PageToolbar';
 import { SelectField } from '@/components/SelectField';
+import { WebsiteOrderShortfalls } from '@/components/WebsiteOrderShortfalls';
 import type { ColumnDef } from '@tanstack/react-table';
 
 interface StockItem {
@@ -20,6 +22,16 @@ interface StockItem {
 }
 
 export default function InventoryPage() {
+  return (
+    <Suspense fallback={<p className="text-slate-500">Loading...</p>}>
+      <InventoryPageContent />
+    </Suspense>
+  );
+}
+
+function InventoryPageContent() {
+  const searchParams = useSearchParams();
+  const focusOrderId = searchParams.get('order');
   const queryClient = useQueryClient();
   const [showAdjust, setShowAdjust] = useState(false);
   const [form, setForm] = useState({ productId: '', qtyChange: '', notes: '' });
@@ -69,6 +81,8 @@ export default function InventoryPage() {
           </ActionButton>
         }
       />
+
+      <WebsiteOrderShortfalls endpoint="/inventory/website-shortfalls" focusOrderId={focusOrderId} />
 
       {showAdjust && (
         <form

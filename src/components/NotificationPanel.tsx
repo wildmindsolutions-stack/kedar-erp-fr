@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { api } from '@/lib/api';
 import { cn, formatDate } from '@/lib/utils';
+import { buildNotificationHref } from '@/lib/notification-links';
 
 interface Notification {
   id: string;
@@ -14,6 +15,7 @@ interface Notification {
   title: string;
   message: string;
   link?: string;
+  refId?: string | null;
   isRead: boolean;
   createdAt: string;
   actor?: { name: string; role: { name: string } };
@@ -145,7 +147,7 @@ export function NotificationPanel() {
                       )}
                       {n.link && (
                         <Link
-                          href={n.link}
+                          href={buildNotificationHref(n.link, n.refId) ?? n.link}
                           onClick={() => { markRead.mutate(n.id); setOpen(false); }}
                           className="mt-1 inline-block text-xs text-blue-600 hover:underline"
                         >

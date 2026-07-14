@@ -1,11 +1,13 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { DataTable } from '@/components/DataTable';
 import { ActionButton } from '@/components/ActionButton';
 import { SelectField } from '@/components/SelectField';
+import { WebsiteOrderShortfalls } from '@/components/WebsiteOrderShortfalls';
 import { formatDate } from '@/lib/utils';
 import { Factory } from 'lucide-react';
 import { ModuleHeader } from '@/components/ModuleHeader';
@@ -22,6 +24,16 @@ interface Batch {
 }
 
 export default function ManufacturingPage() {
+  return (
+    <Suspense fallback={<p className="text-slate-500">Loading...</p>}>
+      <ManufacturingPageContent />
+    </Suspense>
+  );
+}
+
+function ManufacturingPageContent() {
+  const searchParams = useSearchParams();
+  const focusOrderId = searchParams.get('order');
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const canWrite = canWriteModule(user?.role || '', user?.permissions || [], 'manufacturing');
@@ -69,6 +81,8 @@ export default function ManufacturingPage() {
           </ActionButton>
         ) : undefined}
       />
+
+      <WebsiteOrderShortfalls endpoint="/manufacturing/website-shortfalls" focusOrderId={focusOrderId} />
 
       {showForm && (
         <form

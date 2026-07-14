@@ -1,7 +1,8 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { DataTable } from '@/components/DataTable';
 import { ActionButton } from '@/components/ActionButton';
@@ -12,15 +13,27 @@ import { ModuleHeader } from '@/components/ModuleHeader';
 import { useAuth } from '@/lib/auth';
 import { canWriteModule, canConfirmSalesOrders } from '@/lib/permissions';
 import { getApiErrorMessage, toastApiError, toastCreditLimitError, toastSuccess } from '@/lib/toast';
+import { cn } from '@/lib/utils';
 import type { ColumnDef } from '@tanstack/react-table';
 
 interface Order {
   id: string;
   orderDate: string;
   status: string;
+  notes?: string | null;
   customer: { name: string };
   items: { product: { name: string }; qty: number; rate: number }[];
   invoice?: { id: string; invoiceNo: string; total: number };
+}
+
+const WEBSITE_ORDER_MARKER = 'Kedar Foundation website';
+
+function isWebsiteOrder(notes?: string | null) {
+  return Boolean(notes?.includes(WEBSITE_ORDER_MARKER));
+}
+
+function hasAwaitingStock(notes?: string | null) {
+  return Boolean(notes?.includes('AWAITING_STOCK'));
 }
 
 interface OrderItem {
@@ -30,7 +43,17 @@ interface OrderItem {
 }
 
 export default function SalesPage() {
+  return (
+    <Suspense fallback={<p className="text-slate-500">Loading...</p>}>
+      <SalesPageContent />
+    </Suspense>
+  );
+}
+
+function SalesPageContent() {
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const highlightId = searchParams.get('highlight');
   const { user } = useAuth();
   const canWrite = canWriteModule(user?.role || '', user?.permissions || [], 'sales');
   const canConfirm = canConfirmSalesOrders(user?.role || '');
@@ -118,6 +141,26 @@ export default function SalesPage() {
   const orderColumns: ColumnDef<Order>[] = [
     { accessorKey: 'orderDate', header: 'Date', cell: ({ row }) => formatDate(row.original.orderDate) },
     { accessorKey: 'customer.name', header: 'Customer' },
+    {
+      id: 'highlight',
+      header: '',
+      cell: ({ row }) => (
+        highlightId === row.original.id ? (
+          <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-semibold text-blue-800">From notification</span>
+        ) : null
+      ),
+    },
+    {
+      id: 'source',
+      header: 'Source',
+      cell: ({ row }) => (
+        isWebsiteOrder(row.original.notes) ? (
+          <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-800">Website</span>
+        ) : (
+          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">ERP</span>
+        )
+      ),
+    },
     { accessorKey: 'status', header: 'Status', cell: ({ row }) => (
       <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
         row.original.status === 'CONFIRMED' ? 'bg-emerald-100 text-emerald-700' :
@@ -125,6 +168,26 @@ export default function SalesPage() {
         'bg-amber-100 text-amber-700'
       }`}>{row.original.status}</span>
     )},
+    {
+      id: 'notes',
+      header: 'Notes',
+      cell: ({ row }) => {
+        const notes = row.original.notes;
+        if (!notes) return <span className="text-slate-400">—</span>;
+        return (
+          <div className="max-w-xs">
+            <p className="truncate text-xs text-slate-600" title={notes}>
+              {notes.split('\n')[0]}
+            </p>
+            {hasAwaitingStock(notes) && (
+              <span className="mt-1 inline-block rounded bg-orange-100 px-1.5 py-0.5 text-[10px] font-medium text-orange-800">
+                Awaiting stock
+              </span>
+            )}
+          </div>
+        );
+      },
+    },
     { accessorKey: 'invoice.invoiceNo', header: 'Invoice', cell: ({ row }) => row.original.invoice?.invoiceNo || '—' },
     { id: 'actions', header: 'Actions', cell: ({ row }) => (
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
@@ -254,9 +317,19 @@ export default function SalesPage() {
         <button type="button" onClick={() => setTab('invoices')} className={`min-h-[40px] flex-1 rounded-md px-4 py-2 text-sm transition-colors sm:flex-none sm:min-h-0 ${tab === 'invoices' ? 'bg-blue-600 text-white' : 'border border-slate-200 bg-white hover:bg-slate-50'}`}>Invoices</button>
       </div>
 
+      {highlightId && orders.some((o) => o.id === highlightId) && (
+        <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+          Showing order linked from your notification. Look for the highlighted row below.
+        </div>
+      )}
+
       {isLoading ? <p className="text-slate-500">Loading...</p> : (
         tab === 'orders'
-          ? <DataTable columns={orderColumns} data={orders} />
+          ? (
+            <div className={cn(highlightId && 'rounded-lg ring-2 ring-blue-200')}>
+              <DataTable columns={orderColumns} data={orders} />
+            </div>
+          )
           : <DataTable columns={invoiceColumns} data={invoices} />
       )}
     </div>
