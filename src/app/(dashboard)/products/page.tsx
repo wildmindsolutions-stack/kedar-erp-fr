@@ -7,6 +7,7 @@ import { DataTable } from '@/components/DataTable';
 import { ActionButton } from '@/components/ActionButton';
 import { PageToolbar } from '@/components/PageToolbar';
 import { SelectField } from '@/components/SelectField';
+import { FloatingLabelInput } from '@/components/FloatingLabelInput';
 import { formatCurrency } from '@/lib/utils';
 import type { ColumnDef } from '@tanstack/react-table';
 
@@ -85,7 +86,12 @@ export default function ProductsPage() {
           className="mb-6 rounded-lg border border-slate-200 bg-white p-6"
         >
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <input placeholder="Product name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-md border border-slate-200 px-3 py-2 text-sm" required />
+            <FloatingLabelInput
+              label="Product name"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              required
+            />
             <SelectField
               value={form.categoryId}
               onChange={(categoryId) => setForm({ ...form, categoryId })}
@@ -102,9 +108,28 @@ export default function ProductsPage() {
               required
               searchable={false}
             />
-            <input placeholder="Price" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="rounded-md border border-slate-200 px-3 py-2 text-sm" required />
-            <input placeholder="HSN Code" value={form.hsnCode} onChange={(e) => setForm({ ...form, hsnCode: e.target.value })} className="rounded-md border border-slate-200 px-3 py-2 text-sm" required />
-            <input placeholder="GST %" type="number" value={form.gstRate} onChange={(e) => setForm({ ...form, gstRate: e.target.value })} className="rounded-md border border-slate-200 px-3 py-2 text-sm" />
+            <FloatingLabelInput
+              label="Price"
+              type="number"
+              value={form.price}
+              onChange={(e) => setForm({ ...form, price: e.target.value })}
+              required
+            />
+            <FloatingLabelInput
+              label="HSN Code"
+              value={form.hsnCode}
+              onChange={(e) => setForm({ ...form, hsnCode: e.target.value })}
+              required
+            />
+            <FloatingLabelInput
+              label="GST %"
+              type="number"
+              value={form.gstRate}
+              onChange={(e) => setForm({ ...form, gstRate: e.target.value })}
+              min={0}
+              max={28}
+              step={0.01}
+            />
           </div>
           <ActionButton type="submit" loading={createMutation.isPending} loadingText="Saving..." className="mt-4">
             Save Product

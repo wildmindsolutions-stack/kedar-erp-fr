@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { DataTable } from '@/components/DataTable';
 import { ActionButton } from '@/components/ActionButton';
 import { PageToolbar } from '@/components/PageToolbar';
+import { FloatingLabelInput } from '@/components/FloatingLabelInput';
 import { formatCurrency } from '@/lib/utils';
 import { toastApiError, toastSuccess } from '@/lib/toast';
 import { useAuth } from '@/lib/auth';
@@ -18,6 +19,8 @@ interface Customer {
   name: string;
   phone: string;
   email?: string | null;
+  address?: string | null;
+  gstin?: string | null;
   city: string;
   state: string;
   creditLimit: number;
@@ -27,7 +30,15 @@ interface Customer {
   portalEmail?: string | null;
 }
 
-const emptyForm = { name: '', phone: '', city: '', state: 'Maharashtra', creditLimit: '' };
+const emptyForm = {
+  name: '',
+  phone: '',
+  address: '',
+  gstin: '',
+  city: '',
+  state: 'Maharashtra',
+  creditLimit: '',
+};
 
 export default function CustomersPage() {
   const queryClient = useQueryClient();
@@ -73,6 +84,8 @@ export default function CustomersPage() {
     setEditForm({
       name: customer.name,
       phone: customer.phone || '',
+      address: customer.address || '',
+      gstin: customer.gstin || '',
       city: customer.city || '',
       state: customer.state || 'Maharashtra',
       creditLimit: String(customer.creditLimit),
@@ -96,6 +109,22 @@ export default function CustomersPage() {
       ),
     },
     { accessorKey: 'phone', header: 'Phone' },
+    {
+      accessorKey: 'address',
+      header: 'Address',
+      cell: ({ row }) => (
+        <span className="block max-w-[14rem] truncate text-sm text-slate-600" title={row.original.address || ''}>
+          {row.original.address || '—'}
+        </span>
+      ),
+    },
+    {
+      accessorKey: 'gstin',
+      header: 'GST No.',
+      cell: ({ row }) => (
+        <span className="font-mono text-xs text-slate-700">{row.original.gstin || '—'}</span>
+      ),
+    },
     { accessorKey: 'city', header: 'City' },
     { accessorKey: 'state', header: 'State' },
     { accessorKey: 'creditLimit', header: 'Credit Limit', cell: ({ row }) => <span className="tabular-nums">{formatCurrency(row.original.creditLimit)}</span> },
@@ -120,8 +149,6 @@ export default function CustomersPage() {
     }] : []),
   ];
 
-  const inputClass = 'min-h-[44px] rounded-md border border-slate-200 px-3 py-2.5 text-base focus:border-kedar-gold focus:outline-none focus:ring-1 focus:ring-kedar-gold sm:py-2 sm:text-sm';
-
   return (
     <div>
       <PageToolbar
@@ -144,16 +171,23 @@ export default function CustomersPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            createMutation.mutate({ ...form, creditLimit: Number(form.creditLimit) || 0 });
+            createMutation.mutate({
+              ...form,
+              creditLimit: Number(form.creditLimit) || 0,
+              address: form.address.trim() || undefined,
+              gstin: form.gstin.trim() || undefined,
+            });
           }}
           className="mb-6 rounded-lg border border-slate-200 bg-white p-6"
         >
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <input placeholder="Customer name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputClass} required />
-            <input placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inputClass} />
-            <input placeholder="City" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className={inputClass} />
-            <input placeholder="State" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className={inputClass} />
-            <input placeholder="Credit limit" type="number" value={form.creditLimit} onChange={(e) => setForm({ ...form, creditLimit: e.target.value })} className={inputClass} />
+            <FloatingLabelInput label="Customer name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+            <FloatingLabelInput label="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            <FloatingLabelInput label="Customer address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} containerClassName="sm:col-span-2 lg:col-span-1" />
+            <FloatingLabelInput label="Customer GST No." value={form.gstin} onChange={(e) => setForm({ ...form, gstin: e.target.value })} maxLength={15} />
+            <FloatingLabelInput label="City" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
+            <FloatingLabelInput label="State" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} />
+            <FloatingLabelInput label="Credit limit" type="number" value={form.creditLimit} onChange={(e) => setForm({ ...form, creditLimit: e.target.value })} />
           </div>
           <ActionButton type="submit" loading={createMutation.isPending} loadingText="Saving..." className="mt-4">
             Save Customer
@@ -169,6 +203,8 @@ export default function CustomersPage() {
               id: editingId,
               data: {
                 name: editForm.name,
+                address: editForm.address.trim() || null,
+                gstin: editForm.gstin.trim() || null,
                 city: editForm.city,
                 state: editForm.state,
                 creditLimit: Number(editForm.creditLimit) || 0,
@@ -184,18 +220,13 @@ export default function CustomersPage() {
             </ActionButton>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <input placeholder="Customer name" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} className={inputClass} required />
-            <input
-              placeholder="Phone"
-              value={editForm.phone}
-              readOnly
-              disabled
-              className={`${inputClass} cursor-not-allowed bg-slate-100 text-slate-500`}
-              title="Phone number cannot be changed"
-            />
-            <input placeholder="City" value={editForm.city} onChange={(e) => setEditForm({ ...editForm, city: e.target.value })} className={inputClass} />
-            <input placeholder="State" value={editForm.state} onChange={(e) => setEditForm({ ...editForm, state: e.target.value })} className={inputClass} />
-            <input placeholder="Credit limit" type="number" value={editForm.creditLimit} onChange={(e) => setEditForm({ ...editForm, creditLimit: e.target.value })} className={inputClass} />
+            <FloatingLabelInput label="Customer name" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} required />
+            <FloatingLabelInput label="Phone" value={editForm.phone} readOnly disabled title="Phone number cannot be changed" />
+            <FloatingLabelInput label="Customer address" value={editForm.address} onChange={(e) => setEditForm({ ...editForm, address: e.target.value })} containerClassName="sm:col-span-2 lg:col-span-1" />
+            <FloatingLabelInput label="Customer GST No." value={editForm.gstin} onChange={(e) => setEditForm({ ...editForm, gstin: e.target.value })} maxLength={15} />
+            <FloatingLabelInput label="City" value={editForm.city} onChange={(e) => setEditForm({ ...editForm, city: e.target.value })} />
+            <FloatingLabelInput label="State" value={editForm.state} onChange={(e) => setEditForm({ ...editForm, state: e.target.value })} />
+            <FloatingLabelInput label="Credit limit" type="number" value={editForm.creditLimit} onChange={(e) => setEditForm({ ...editForm, creditLimit: e.target.value })} />
           </div>
           <ActionButton type="submit" loading={updateMutation.isPending} loadingText="Updating..." className="mt-4">
             Update Customer

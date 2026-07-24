@@ -94,7 +94,7 @@ export function Sidebar() {
           </Link>
         </div>
 
-        <nav className="flex-1 overflow-y-auto overscroll-contain px-3 py-4">
+        <nav className="sidebar-scroll flex-1 overflow-y-auto overscroll-contain px-3 py-4">
           {filteredGroups.map((group) => (
             <div key={group.label} className="mb-4">
               <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-kedar-gold/70">
