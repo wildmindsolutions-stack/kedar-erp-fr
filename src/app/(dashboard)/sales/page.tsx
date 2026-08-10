@@ -23,7 +23,16 @@ interface Order {
   notes?: string | null;
   customer: { name: string };
   items: { product: { name: string }; qty: number; rate: number }[];
-  invoice?: { id: string; invoiceNo: string; total: number };
+  invoice?: { id: string; invoiceNo: string; total: number; withGst?: boolean };
+}
+
+interface SalesInvoice {
+  id: string;
+  invoiceNo: string;
+  issuedAt: string;
+  withGst?: boolean;
+  order: { customer: { name: string } };
+  total: number;
 }
 
 const WEBSITE_ORDER_MARKER = 'Kedar Foundation website';
@@ -63,6 +72,7 @@ function SalesPageContent() {
   const [items, setItems] = useState<OrderItem[]>([{ productId: '', qty: 1, rate: 0 }]);
   const [pdfLoadingId, setPdfLoadingId] = useState<string | null>(null);
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [confirmOrderId, setConfirmOrderId] = useState<string | null>(null);
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['orders'],
@@ -71,7 +81,7 @@ function SalesPageContent() {
 
   const { data: invoices = [] } = useQuery({
     queryKey: ['sales-invoices'],
-    queryFn: () => api.get('/sales/invoices').then((r) => r.data),
+    queryFn: () => api.get<SalesInvoice[]>('/sales/invoices').then((r) => r.data),
     enabled: tab === 'invoices',
   });
 
@@ -99,8 +109,12 @@ function SalesPageContent() {
   });
 
   const confirmMutation = useMutation({
-    mutationFn: (id: string) => api.post<{ invoiceNo: string; total: number; order?: { customer: { name: string } } }>(`/sales/orders/${id}/confirm`),
-    onSuccess: (res) => {
+    mutationFn: ({ id, withGst }: { id: string; withGst: boolean }) =>
+      api.post<{ invoiceNo: string; total: number; withGst?: boolean; order?: { customer: { name: string } } }>(
+        `/sales/orders/${id}/confirm`,
+        { withGst },
+      ),
+    onSuccess: (res, variables) => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       queryClient.invalidateQueries({ queryKey: ['sales-invoices'] });
       queryClient.invalidateQueries({ queryKey: ['delivery-invoices'] });
@@ -108,10 +122,12 @@ function SalesPageContent() {
       queryClient.invalidateQueries({ queryKey: ['customers'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       setConfirmingId(null);
+      setConfirmOrderId(null);
       const inv = res.data;
+      const label = variables.withGst ? 'Tax Invoice' : 'Invoice (without GST)';
       toastSuccess(
-        'Order confirmed & invoice generated',
-        inv.invoiceNo ? `Invoice ${inv.invoiceNo} — ${formatCurrency(Number(inv.total))}` : undefined,
+        `${label} generated`,
+        inv.invoiceNo ? `${inv.invoiceNo} — ${formatCurrency(Number(inv.total))}` : undefined,
       );
     },
     onError: (error) => {
@@ -124,6 +140,12 @@ function SalesPageContent() {
       }
     },
   });
+
+  function runConfirm(withGst: boolean) {
+    if (!confirmOrderId) return;
+    setConfirmingId(confirmOrderId);
+    confirmMutation.mutate({ id: confirmOrderId, withGst });
+  }
 
   const downloadPdf = async (invoiceId: string) => {
     setPdfLoadingId(invoiceId);
@@ -196,10 +218,7 @@ function SalesPageContent() {
             size="sm"
             loading={confirmingId === row.original.id}
             loadingText="Confirming..."
-            onClick={() => {
-              setConfirmingId(row.original.id);
-              confirmMutation.mutate(row.original.id);
-            }}
+            onClick={() => setConfirmOrderId(row.original.id)}
           >
             Confirm & Invoice
           </ActionButton>
@@ -224,10 +243,21 @@ function SalesPageContent() {
     )},
   ];
 
-  const invoiceColumns: ColumnDef<{ id: string; invoiceNo: string; issuedAt: string; order: { customer: { name: string } }; total: number }>[] = [
+  const invoiceColumns: ColumnDef<SalesInvoice>[] = [
     { accessorKey: 'invoiceNo', header: 'Invoice No' },
     { accessorKey: 'issuedAt', header: 'Date', cell: ({ row }) => formatDate(row.original.issuedAt) },
     { accessorKey: 'order.customer.name', header: 'Customer' },
+    {
+      id: 'type',
+      header: 'Type',
+      cell: ({ row }) => (
+        row.original.withGst === false ? (
+          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">Without GST</span>
+        ) : (
+          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">Tax Invoice</span>
+        )
+      ),
+    },
     { accessorKey: 'total', header: 'Total', cell: ({ row }) => <span className="tabular-nums">{formatCurrency(Number(row.original.total))}</span> },
     { id: 'pdf', header: '', cell: ({ row }) => (
       <ActionButton
@@ -241,6 +271,8 @@ function SalesPageContent() {
       </ActionButton>
     )},
   ];
+
+  const confirmOrder = orders.find((o) => o.id === confirmOrderId);
 
   return (
     <div>
@@ -320,6 +352,56 @@ function SalesPageContent() {
       {highlightId && orders.some((o) => o.id === highlightId) && (
         <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
           Showing order linked from your notification. Look for the highlighted row below.
+        </div>
+      )}
+
+      {confirmOrderId && confirmOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-kedar-navy/50 p-4 backdrop-blur-[1px]">
+          <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-kedar-navy">Confirm Order & Generate Bill</h3>
+            <p className="mt-2 text-sm text-slate-600">
+              Customer: <span className="font-medium text-slate-900">{confirmOrder.customer.name}</span>
+            </p>
+            <p className="mt-3 text-sm text-slate-600">
+              Choose bill type. Stock will be deducted in both cases.
+            </p>
+            <div className="mt-5 space-y-3">
+              <button
+                type="button"
+                disabled={confirmMutation.isPending}
+                onClick={() => runConfirm(true)}
+                className="w-full rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-left transition-colors hover:bg-emerald-100 disabled:opacity-60"
+              >
+                <p className="text-sm font-semibold text-emerald-900">Tax Invoice (With GST)</p>
+                <p className="mt-1 text-xs text-emerald-800/80">
+                  Prints as Tax Invoice with CGST/SGST/IGST. Use for GST customers.
+                </p>
+              </button>
+              <button
+                type="button"
+                disabled={confirmMutation.isPending}
+                onClick={() => runConfirm(false)}
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-left transition-colors hover:bg-slate-100 disabled:opacity-60"
+              >
+                <p className="text-sm font-semibold text-slate-900">Invoice (Without GST)</p>
+                <p className="mt-1 text-xs text-slate-600">
+                  Prints as Invoice only — for parchi / trade bills. No GST lines. Stock still maintained.
+                </p>
+              </button>
+            </div>
+            <div className="mt-5 flex justify-end">
+              <ActionButton
+                type="button"
+                variant="secondary"
+                disabled={confirmMutation.isPending}
+                onClick={() => {
+                  if (!confirmMutation.isPending) setConfirmOrderId(null);
+                }}
+              >
+                Cancel
+              </ActionButton>
+            </div>
+          </div>
         </div>
       )}
 
