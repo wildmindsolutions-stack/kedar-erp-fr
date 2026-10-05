@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Pencil } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { DataTable } from '@/components/DataTable';
 import { ActionButton } from '@/components/ActionButton';
@@ -90,6 +90,19 @@ export default function ProductsPage() {
     onError: (error) => toastApiError(error, 'Could not update product.'),
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: ({ id }: { id: string; name: string }) => api.delete(`/products/${id}`),
+    onSuccess: (_res, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      if (editingId === variables.id) {
+        setEditingId(null);
+        setEditForm(emptyForm);
+      }
+      toastSuccess('Product removed', `${variables.name} is no longer in the catalogue.`);
+    },
+    onError: (error) => toastApiError(error, 'Could not delete product.'),
+  });
+
   const openEdit = (product: Product) => {
     setShowForm(false);
     setEditingId(product.id);
@@ -118,16 +131,36 @@ export default function ProductsPage() {
     ...(canWrite ? [{
       id: 'actions',
       header: '',
-      cell: ({ row }: { row: { original: Product } }) => (
-        <button
-          type="button"
-          onClick={() => openEdit(row.original)}
-          className="rounded-md p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-kedar-gold-dark"
-          title="Edit product"
-        >
-          <Pencil size={16} />
-        </button>
-      ),
+      cell: ({ row }: { row: { original: Product } }) => {
+        const product = row.original;
+        const deleting = deleteMutation.isPending && deleteMutation.variables?.id === product.id;
+        return (
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => openEdit(product)}
+              className="rounded-md p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-kedar-gold-dark"
+              title="Edit product"
+            >
+              <Pencil size={16} />
+            </button>
+            <button
+              type="button"
+              disabled={deleting}
+              onClick={() => {
+                if (!window.confirm(`Remove ${product.name} from the catalogue? Past orders and invoices will keep this product.`)) {
+                  return;
+                }
+                deleteMutation.mutate({ id: product.id, name: product.name });
+              }}
+              className="rounded-md p-1.5 text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+              title="Delete product"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+        );
+      },
     }] : []),
   ];
 
