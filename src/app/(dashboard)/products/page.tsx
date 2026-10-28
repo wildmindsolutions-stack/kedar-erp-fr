@@ -27,11 +27,19 @@ interface Product {
   gstRate: number;
   stock: number;
   isActive: boolean;
+  packSize?: string | null;
+  description?: string | null;
+  prebookEnabled?: boolean;
 }
 
-const emptyForm = { name: '', categoryId: '', unitId: '', price: '', hsnCode: '', gstRate: '5' };
+const emptyForm = {
+  name: '', categoryId: '', unitId: '', price: '', hsnCode: '', gstRate: '5',
+  packSize: '', description: '', prebookEnabled: false,
+};
 
-function toPayload(form: typeof emptyForm) {
+type ProductForm = typeof emptyForm;
+
+function toPayload(form: ProductForm) {
   return {
     name: form.name.trim(),
     categoryId: form.categoryId,
@@ -39,7 +47,44 @@ function toPayload(form: typeof emptyForm) {
     price: Number(form.price),
     hsnCode: form.hsnCode.trim(),
     gstRate: Number(form.gstRate),
+    packSize: form.packSize.trim() || null,
+    description: form.description.trim() || null,
+    prebookEnabled: form.prebookEnabled,
   };
+}
+
+/** Website pre-booking fields (shown on kedar-foundation /prebook when enabled). */
+function PrebookFields({ form, onChange }: { form: ProductForm; onChange: (form: ProductForm) => void }) {
+  return (
+    <div className="mt-4 rounded-lg border border-slate-200 bg-white/60 p-4">
+      <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-900">
+        <input
+          type="checkbox"
+          checked={form.prebookEnabled}
+          onChange={(e) => onChange({ ...form, prebookEnabled: e.target.checked })}
+          className="h-4 w-4 accent-kedar-navy"
+        />
+        Show on website pre-booking page
+      </label>
+      {form.prebookEnabled && (
+        <div className="mt-3 grid gap-4 sm:grid-cols-3">
+          <FloatingLabelInput
+            label="Pack size (e.g. 40 kg bag)"
+            value={form.packSize}
+            onChange={(e) => onChange({ ...form, packSize: e.target.value })}
+          />
+          <div className="sm:col-span-2">
+            <FloatingLabelInput
+              label="Short description"
+              value={form.description}
+              onChange={(e) => onChange({ ...form, description: e.target.value })}
+              maxLength={300}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function ProductsPage() {
@@ -113,11 +158,21 @@ export default function ProductsPage() {
       price: String(product.price),
       hsnCode: product.hsnCode,
       gstRate: String(product.gstRate),
+      packSize: product.packSize ?? '',
+      description: product.description ?? '',
+      prebookEnabled: Boolean(product.prebookEnabled),
     });
   };
 
   const columns: ColumnDef<Product>[] = [
-    { accessorKey: 'name', header: 'Product' },
+    { accessorKey: 'name', header: 'Product', cell: ({ row }) => (
+      <span>
+        {row.original.name}
+        {row.original.prebookEnabled && (
+          <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800">Pre-book</span>
+        )}
+      </span>
+    )},
     { accessorKey: 'category.name', header: 'Category' },
     { accessorKey: 'unit.symbol', header: 'Unit' },
     { accessorKey: 'price', header: 'Price', cell: ({ row }) => <span className="tabular-nums">{formatCurrency(row.original.price)}</span> },
@@ -239,6 +294,7 @@ export default function ProductsPage() {
               step={0.01}
             />
           </div>
+          <PrebookFields form={form} onChange={setForm} />
           <ActionButton type="submit" loading={createMutation.isPending} loadingText="Saving..." className="mt-4">
             Save Product
           </ActionButton>
@@ -305,6 +361,7 @@ export default function ProductsPage() {
               step={0.01}
             />
           </div>
+          <PrebookFields form={editForm} onChange={setEditForm} />
           <ActionButton type="submit" loading={updateMutation.isPending} loadingText="Updating..." className="mt-4">
             Update Product
           </ActionButton>

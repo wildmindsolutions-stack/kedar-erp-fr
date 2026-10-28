@@ -94,6 +94,7 @@ export const NAV_GROUPS = [
     label: 'Commercial',
     items: [
       { href: '/sales', label: 'Sales & Billing', module: 'sales', icon: 'cart' },
+      { href: '/sales/pre-bookings', label: 'Pre-Bookings', module: 'sales', icon: 'calendar' },
       { href: '/customers', label: 'Customers', module: 'customers', icon: 'users' },
       { href: '/payments', label: 'Payments', module: 'payments', icon: 'credit' },
     ],
@@ -117,6 +118,7 @@ export const MODULE_META: Record<string, { title: string; description: string; f
   manufacturing: { title: 'Manufacturing', description: 'Daily production entry, batches, and yield tracking', flowStep: 1 },
   inventory: { title: 'Inventory', description: 'Stock levels, adjustments, and low-stock alerts', flowStep: 2 },
   sales: { title: 'Sales & GST Billing', description: 'Sales orders, invoice generation, and sales register', flowStep: 3 },
+  'pre-bookings': { title: 'Website Pre-Bookings', description: 'Cash-on-delivery pre-bookings from the Kedar Foundation website' },
   customers: { title: 'Customer Management', description: 'Customer database, credit limits, and ledgers', flowStep: 3 },
   payments: { title: 'Payment Management', description: 'Payment receipts, outstanding tracking, and collections', flowStep: 5 },
   delivery: { title: 'Delivery Management', description: 'Delivery challan, dispatch, and tracking', flowStep: 4 },

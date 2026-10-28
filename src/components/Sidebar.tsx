@@ -15,6 +15,7 @@ import {
   Menu,
   X,
   Box,
+  CalendarCheck,
   type LucideIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -33,6 +34,7 @@ const ICONS: Record<string, LucideIcon> = {
   truck: Truck,
   box: Box,
   settings: Settings,
+  calendar: CalendarCheck,
 };
 
 export function Sidebar() {
@@ -52,6 +54,11 @@ export function Sidebar() {
       return canAccessModule(role, perms, item.module);
     }),
   })).filter((g) => g.items.length > 0);
+
+  // Most specific match wins, so /sales/pre-bookings doesn't also highlight /sales
+  const activeHref = NAV_GROUPS.flatMap((g) => g.items.map((i) => i.href))
+    .filter((href) => pathname === href || pathname.startsWith(`${href}/`))
+    .sort((a, b) => b.length - a.length)[0];
 
   useEffect(() => {
     setOpen(false);
@@ -103,7 +110,7 @@ export function Sidebar() {
               <div className="space-y-0.5">
                 {group.items.map((item) => {
                   const Icon = ICONS[item.icon] || Package;
-                  const active = pathname.startsWith(item.href);
+                  const active = item.href === activeHref;
                   return (
                     <Link
                       key={item.href}

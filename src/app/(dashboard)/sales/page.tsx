@@ -41,6 +41,10 @@ function isWebsiteOrder(notes?: string | null) {
   return Boolean(notes?.includes(WEBSITE_ORDER_MARKER));
 }
 
+function isPreBookingOrder(notes?: string | null) {
+  return Boolean(notes?.startsWith('Pre-booking PB/'));
+}
+
 function hasAwaitingStock(notes?: string | null) {
   return Boolean(notes?.includes('AWAITING_STOCK'));
 }
@@ -176,7 +180,9 @@ function SalesPageContent() {
       id: 'source',
       header: 'Source',
       cell: ({ row }) => (
-        isWebsiteOrder(row.original.notes) ? (
+        isPreBookingOrder(row.original.notes) ? (
+          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">Pre-booking</span>
+        ) : isWebsiteOrder(row.original.notes) ? (
           <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-800">Website</span>
         ) : (
           <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">ERP</span>
