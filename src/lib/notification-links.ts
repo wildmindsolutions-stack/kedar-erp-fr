@@ -9,7 +9,7 @@ export function buildNotificationHref(link?: string | null, refId?: string | nul
     params.set('highlight', refId);
   } else if (base === '/manufacturing' || base === '/inventory') {
     params.set('order', refId);
-  } else if (base === '/customers') {
+  } else if (base === '/customers' || base === '/delivery/board') {
     params.set('highlight', refId);
   } else {
     params.set('ref', refId);

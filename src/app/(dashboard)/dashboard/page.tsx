@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { PrebookSummary } from '@/components/PrebookSummary';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
@@ -212,6 +213,8 @@ export default function DashboardPage() {
           <p className="text-sm text-slate-500">{ROLE_INTRO[user.role]}</p>
         </div>
       )}
+
+      <PrebookSummary />
 
       {data?.roleTasks && data.roleTasks.length > 0 && (
         <div className="rounded-xl border border-slate-200 bg-white p-5">

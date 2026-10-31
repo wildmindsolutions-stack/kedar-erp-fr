@@ -11,6 +11,7 @@ import { WebsiteOrderShortfalls } from '@/components/WebsiteOrderShortfalls';
 import { formatDate } from '@/lib/utils';
 import { Factory } from 'lucide-react';
 import { ModuleHeader } from '@/components/ModuleHeader';
+import { PrebookSummary } from '@/components/PrebookSummary';
 import { useAuth } from '@/lib/auth';
 import { canWriteModule } from '@/lib/permissions';
 import type { ColumnDef } from '@tanstack/react-table';
@@ -83,6 +84,7 @@ function ManufacturingPageContent() {
       />
 
       <WebsiteOrderShortfalls endpoint="/manufacturing/website-shortfalls" focusOrderId={focusOrderId} />
+      <PrebookSummary demandOnly />
 
       {showForm && (
         <form

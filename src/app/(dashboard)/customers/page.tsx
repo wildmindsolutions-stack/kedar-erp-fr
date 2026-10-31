@@ -11,7 +11,7 @@ import { formatCurrency } from '@/lib/utils';
 import { toastApiError, toastSuccess } from '@/lib/toast';
 import { useAuth } from '@/lib/auth';
 import { canWriteModule } from '@/lib/permissions';
-import { Pencil } from 'lucide-react';
+import { KeyRound, Pencil } from 'lucide-react';
 import type { ColumnDef } from '@tanstack/react-table';
 
 interface Customer {
@@ -64,6 +64,13 @@ export default function CustomersPage() {
       toastSuccess('Customer created', name ? `${name} added successfully.` : undefined);
     },
     onError: (error) => toastApiError(error, 'Could not create customer.'),
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: ({ id, password }: { id: string; password: string }) =>
+      api.post<{ email: string }>(`/customers/${id}/reset-website-password`, { password }),
+    onSuccess: (res) => toastSuccess('Website password reset', `Login email: ${res.data.email}`),
+    onError: (error) => toastApiError(error, 'Could not reset the password.'),
   });
 
   const updateMutation = useMutation({
@@ -137,14 +144,27 @@ export default function CustomersPage() {
       id: 'actions',
       header: '',
       cell: ({ row }: { row: { original: Customer } }) => (
-        <button
-          type="button"
-          onClick={() => openEdit(row.original)}
-          className="rounded-md p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-kedar-gold-dark"
-          title="Edit customer"
-        >
-          <Pencil size={16} />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => openEdit(row.original)}
+            className="rounded-md p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-kedar-gold-dark"
+            title="Edit customer"
+          >
+            <Pencil size={16} />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const password = window.prompt(`New website password for ${row.original.name} (min 6 characters):`);
+              if (password) resetPasswordMutation.mutate({ id: row.original.id, password });
+            }}
+            className="rounded-md p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-kedar-gold-dark"
+            title="Reset website password"
+          >
+            <KeyRound size={16} />
+          </button>
+        </div>
       ),
     }] : []),
   ];

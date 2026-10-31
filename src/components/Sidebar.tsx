@@ -16,12 +16,13 @@ import {
   X,
   Box,
   CalendarCheck,
+  MapPin,
   type LucideIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/auth';
-import { NAV_GROUPS, canAccessModule } from '@/lib/permissions';
+import { NAV_GROUPS, canAccessRoute } from '@/lib/permissions';
 import { BrandLogo } from '@/components/BrandLogo';
 
 const ICONS: Record<string, LucideIcon> = {
@@ -35,6 +36,7 @@ const ICONS: Record<string, LucideIcon> = {
   box: Box,
   settings: Settings,
   calendar: CalendarCheck,
+  map: MapPin,
 };
 
 export function Sidebar() {
@@ -51,7 +53,7 @@ export function Sidebar() {
       if (item.module === 'users') {
         return role === 'Owner' || role === 'Admin';
       }
-      return canAccessModule(role, perms, item.module);
+      return canAccessRoute(role, perms, item.href);
     }),
   })).filter((g) => g.items.length > 0);
 

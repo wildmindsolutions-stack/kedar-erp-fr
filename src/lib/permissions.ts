@@ -41,9 +41,23 @@ export function getModuleFromPath(pathname: string): string {
 }
 
 /** Whether the current user may open this route (sidebar + direct URL). */
+export const DELIVERY_SUPERVISOR = 'Delivery Supervisor';
+export const DELIVERY_EXECUTIVE = 'Delivery Executive';
+
+/** Field staff only work from the delivery board. */
+export function isFieldDeliveryRole(role: string): boolean {
+  return role === DELIVERY_SUPERVISOR || role === DELIVERY_EXECUTIVE;
+}
+
+export function canManageDeliveryAreas(role: string): boolean {
+  return ['Owner', 'Admin', 'Manager'].includes(role);
+}
+
 export function canAccessRoute(role: string, permissions: string[], pathname: string): boolean {
   const mod = getModuleFromPath(pathname);
   if (mod === 'users') return role === 'Owner' || role === 'Admin';
+  if (pathname.startsWith('/delivery/areas') && !canManageDeliveryAreas(role)) return false;
+  if (isFieldDeliveryRole(role) && !pathname.startsWith('/delivery/board')) return false;
   return canAccessModule(role, permissions, mod);
 }
 
@@ -64,6 +78,8 @@ export const ROLE_HOME: Record<string, string> = {
   Accountant: '/dashboard',
   Warehouse: '/dashboard',
   Sales: '/dashboard',
+  [DELIVERY_SUPERVISOR]: '/delivery/board',
+  [DELIVERY_EXECUTIVE]: '/delivery/board',
 };
 
 export const ROLE_DESCRIPTIONS: Record<string, string> = {
@@ -91,10 +107,17 @@ export const NAV_GROUPS = [
     ],
   },
   {
+    label: 'Pre-booking',
+    items: [
+      { href: '/sales/pre-bookings', label: 'Pre-Bookings', module: 'sales', icon: 'calendar' },
+      { href: '/delivery/board', label: 'Delivery Board', module: 'delivery', icon: 'truck' },
+      { href: '/delivery/areas', label: 'Delivery Areas', module: 'delivery', icon: 'map' },
+    ],
+  },
+  {
     label: 'Commercial',
     items: [
       { href: '/sales', label: 'Sales & Billing', module: 'sales', icon: 'cart' },
-      { href: '/sales/pre-bookings', label: 'Pre-Bookings', module: 'sales', icon: 'calendar' },
       { href: '/customers', label: 'Customers', module: 'customers', icon: 'users' },
       { href: '/payments', label: 'Payments', module: 'payments', icon: 'credit' },
     ],
@@ -118,6 +141,8 @@ export const MODULE_META: Record<string, { title: string; description: string; f
   manufacturing: { title: 'Manufacturing', description: 'Daily production entry, batches, and yield tracking', flowStep: 1 },
   inventory: { title: 'Inventory', description: 'Stock levels, adjustments, and low-stock alerts', flowStep: 2 },
   sales: { title: 'Sales & GST Billing', description: 'Sales orders, invoice generation, and sales register', flowStep: 3 },
+  'delivery-board': { title: 'Delivery Board', description: 'Assign, deliver, and collect cash for pre-bookings' },
+  'delivery-areas': { title: 'Delivery Areas', description: 'Pincode areas, supervisors, and their delivery executives' },
   'pre-bookings': { title: 'Website Pre-Bookings', description: 'Cash-on-delivery pre-bookings from the Kedar Foundation website' },
   customers: { title: 'Customer Management', description: 'Customer database, credit limits, and ledgers', flowStep: 3 },
   payments: { title: 'Payment Management', description: 'Payment receipts, outstanding tracking, and collections', flowStep: 5 },
